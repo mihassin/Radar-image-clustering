@@ -18,3 +18,9 @@ static/
 
 # ignore the css file
 */assets/styles/*.css
+
+# ignore .tmp
+*.tmp
+
+*wfs
+*api
