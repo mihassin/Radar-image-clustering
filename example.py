@@ -50,7 +50,7 @@ def to_jpg(fname, location, obj, cnc):
 
 def dbzh_tojpg(cnc):
 	for i in find("dbzh", cnc):
-		location  = "pics/dbzh/"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
+		location  = "data/pics/dbzh/"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
 		create_path(location)
 		filename = cnc[i].title+"_"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-%H-%M-%S')+".jpg"
 		to_jpg(filename, location, i, cnc)
