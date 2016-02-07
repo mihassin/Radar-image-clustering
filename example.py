@@ -67,5 +67,6 @@ def pull_all_radar_images(cnc):
     radial velocity (vrad)
     rain classification (hclass)
     cloud top height (etop_20)
+    
 '''
 
