@@ -26,7 +26,7 @@ def create_path(path_):
 def getmap_info(obj, cnc):
 	res = [[cnc[obj].title]]
 	res.append(list(cnc["Radar:kuopio_dbzh"].styles)[1:2])
-	arr = ["EPSG:4258", cnc[obj].boundingBoxWGS84, (720,480), "image/jpeg", True]
+	arr = ["EPSG:4326", cnc[obj].boundingBoxWGS84, (720,480), "image/jpeg", True]
 	res.extend(arr)
 	return res
 
@@ -48,9 +48,24 @@ def to_jpg(fname, location, obj, cnc):
 	out.write(img.read())
 	out.close()
 
-def dbzh_tojpg(cnc):
-	for i in find("dbzh", cnc):
-		location  = "data/pics/dbzh/"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
+def lots_tojpg(which, cnc):
+	for i in find(which, cnc):
+		location  = "data/pics/"+which+"/"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
 		create_path(location)
 		filename = cnc[i].title+"_"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-%H-%M-%S')+".jpg"
 		to_jpg(filename, location, i, cnc)
+
+def pull_all_radar_images(cnc):
+	lots_tojpg("dbzh", cnc)
+	lots_tojpg("etop_20",cnc)
+	lots_tojpg("vrad",cnc)
+	lots_tojpg("hclass", cnc)
+
+'''
+
+    radar reflectivity (dbz)
+    radial velocity (vrad)
+    rain classification (hclass)
+    cloud top height (etop_20)
+'''
+
