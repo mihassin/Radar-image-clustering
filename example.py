@@ -1,16 +1,26 @@
-from owslib.wms import WebMapService as wms
+from owslib.wms import WebMapService
+from owslib.csw import CatalogueServiceWeb
 import numpy as np
 import datetime
 import time
 import os
 
-def connect(api):
+
+def wms_connection(api):
 	domain = "http://wms.fmi.fi/"
 	url = domain + "fmi-apikey/" + api + "/geoserver/wms"
-	cnc = wms(url, version='1.1.1')
+	cnc = WebMapService(url, version='1.1.1')
 	if cnc.identification.type != "OGC:WMS":
 		return "error"
 	return cnc
+
+
+def csw_connection():
+	cnc = CatalogueServiceWeb('http://catalog.fmi.fi/geonetwork/srv/en/csw') # open for public, not api required 
+	if cnc.identification.type != "OGC:WMS":
+		return "error"
+	return cnc
+
 
 def find(item, connection):
 	res = np.array([])
@@ -19,9 +29,11 @@ def find(item, connection):
 			res = np.append(res, a)
 	return res
 
+
 def create_path(path_):
 	if not os.path.exists(path_):
 		os.makedirs(path_)
+
 
 def getmap_info(obj, cnc):
 	res = [[cnc[obj].title]]
@@ -29,6 +41,7 @@ def getmap_info(obj, cnc):
 	arr = ["EPSG:4326", cnc[obj].boundingBoxWGS84, (720,480), "image/jpeg", True]
 	res.extend(arr)
 	return res
+
 
 def getmap(arr, cnc):
 	return cnc.getmap(
@@ -41,6 +54,7 @@ def getmap(arr, cnc):
 		transparent=arr[6]
 		)
 
+
 def to_jpg(fname, location, obj, cnc):
 	arr = getmap_info(obj, cnc)
 	img = getmap(arr, cnc)
@@ -48,12 +62,14 @@ def to_jpg(fname, location, obj, cnc):
 	out.write(img.read())
 	out.close()
 
+
 def lots_tojpg(which, cnc):
 	for i in find(which, cnc):
 		location  = "data/pics/"+which+"/"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
 		create_path(location)
 		filename = cnc[i].title+"_"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-%H-%M-%S')+".jpg"
 		to_jpg(filename, location, i, cnc)
+
 
 def pull_all_radar_images(cnc):
 	lots_tojpg("dbzh", cnc)

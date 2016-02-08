@@ -27,3 +27,6 @@ static/
 *api
 data/
 pics/
+docs/
+*.odt
+*.pdf
