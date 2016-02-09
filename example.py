@@ -1,10 +1,7 @@
 from owslib.wms import WebMapService
 from owslib.csw import CatalogueServiceWeb
 import numpy as np
-import datetime
-import time
-import os
-
+import datetime, time, os
 
 def wms_connection(api):
 	domain = "http://wms.fmi.fi/"
@@ -37,7 +34,9 @@ def create_path(path_):
 
 def getmap_info(obj, cnc):
 	res = [[cnc[obj].title]]
-	res.append(list(cnc["Radar:kuopio_dbzh"].styles)[1:2])
+	style = list(cnc["Radar:kuopio_dbzh"].styles)
+	style.remove('raster')
+	res.append(style[0:1])
 	arr = ["EPSG:4326", cnc[obj].boundingBoxWGS84, (720,480), "image/jpeg", True]
 	res.extend(arr)
 	return res

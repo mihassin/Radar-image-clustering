@@ -28,5 +28,6 @@ static/
 data/
 pics/
 docs/
+raster/
 *.odt
 *.pdf
