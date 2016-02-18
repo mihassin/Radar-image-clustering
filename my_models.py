@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.random as rand
+import scipy.spatial.distance as distance
 from preprocessor import *
 
 
@@ -8,35 +9,75 @@ class my_models:
 	def __init__(self):
 		self.__preprocessor = preprocessor()
 		self.__training_data = []
-		self.__means = []
+		self.__imgsize = 480*720*3
+		self.__means = np.zeros((10, self.__imgsize), dtype="int")
+		self.__meanindx = np.zeros(10, dtype="int")
+		self.__path = ""
 
 
 	def get_cluster_means(self):
 		return self.__means
 
 
+	def set_cluster_means(self, means):
+		self.__means = means
+
+
 	def get_training_data(self, path):
-		self.__training_data = self.__preprocessor.get_data(path)
-		return "done"
+		print(len(self.__training_data))
+		if len(self.__training_data) == 0 or self.__path != path:
+			data = self.__preprocessor.get_data(path)
+			print("Data harvested")
+			self.__training_data = self.__preprocessor.get_data_as_1d()
+			print("Data in 1d")
+		return self.__training_data
 
 
-	def __randomly_init_cluster_means(self, k):
+	def randomly_init_cluster_means(self, k):
 		n = self.__preprocessor.count_data()
 		for i in range(k):
-			img = self.__training_data[rand.randint(n)]
-			self.__means.append(img)
-		return self.__means
+			indx = rand.randint(n)
+			img = self.__training_data[indx]
+			self.__meanindx[i] = indx
+			self.__means[i] = img
+		return self.__means, self.__meanindx
+
+#KESKEN! tyhjät joukot
+	def clusterify(self):
+		data = self.__training_data
+		means = self.get_cluster_means()
+		distances = np.zeros(len(means))
+		clusters = dict()
+		for i in range(len(means)):
+			clusters[i] = np.array([], dtype="int")
+		for j in range(self.__preprocessor.count_data()):
+			i = -1
+			for k in range(len(means)):
+				if j == self.__meanindx[k]:
+					distances[k] = -1
+				else:
+					distances[k] = distance.euclidean(data[j], means[k])
+			i = np.argmin(distances)
+			tmp = np.array(clusters[i])
+			tmp = np.append(tmp, j)
+			clusters[i] = tmp
+		return clusters
+
+#KESKEN tyhjät joukot
+	def divide_data(self, clusters, j):
+		subset_indx = clusters[j]
+	#	if np.empty(subset_indx):
+	#		return subset_indx
+		data = self.__training_data
+		subset = [data[subset_indx[0]]]
+		for i in range(1,len(subset_indx)):
+			subset.append(data[subset_indx[i]])
+		return subset
 
 
-	def __clusterify():
-		return
-
-
-	def __divide_data():
-		return
-
-
-	def __newmean(self, subset):
+	def newmean(self, subset):
+	#	if np.empty(subset):
+	#		return np.array([])
 		mean = np.sum(subset, axis=0)
 		mean /= len(subset)
 		return mean
@@ -46,27 +87,38 @@ class my_models:
 		clusters = dict()
 		self.__randomly_init_cluster_means(k)
 		while True:
-			clusters = __clusterify()
-			tmp_means = []
+			i = 1
+			print("round: " + str(i))
+			print("=========")
+			clusters = self.__clusterify()
+			print("clusterified")
+			tmp_means = np.zeros(np.shape(self.__means))
 			for j in range(k):
-				subset = divide_data()
-				tmp_means[j] = newmean(subset)
-			if self.__means == tmp_means:
+				print("mean: #" + str(j))
+				subset = self.__divide_data(clusters, j)
+				print("data division complete")
+				tmp_means[j] = self.__newmean(subset)
+				print("new mean found")
+			print("=========")
+			if np.array_equal(self.__means, tmp_means):
+				print("done")
 				break
+			self.set_cluster_means(tmp_means)
+			i += 1
 		return self.__means
 
 	#requires modifications
 	def __find_subset_minimum(self, dis_X, subset):
-    	mu_key = -1
-    	mu_dist = 1.0e12
-    	tmp_dist = 0
-    	for i in subset:
-        	for j in subset:
-            	tmp_dist += dis_X[i][j] 
-        	if mu_dist > tmp_dist:
-            	mu_key = i
-            	mu_dist = tmp_dist
-    	return X[mu_key]
+		mu_key = -1
+		mu_dist = 1.0e12
+		tmp_dist = 0
+		for i in subset:
+			for j in subset:
+				tmp_dist += dis_X[i][j] 
+			if mu_dist > tmp_dist:
+				mu_key = i
+				mu_dist = tmp_dist
+		return X[mu_key]
 
 
 	def k_metoids(self, k):

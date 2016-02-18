@@ -1,4 +1,5 @@
 import matplotlib.image as mpimg
+import numpy as np
 import os
 
 
@@ -39,6 +40,14 @@ class preprocessor:
 			self.__amount = len(self.__data)
 		return self.__data
 
+
+	def get_data_as_1d(self):
+		tmp = self.__data
+		shape = np.shape(tmp[0])
+		new_shape = np.product(shape)
+		for i in range(self.__amount):
+			tmp[i] = np.reshape(tmp[i], new_shape)
+		return tmp
 
 	#data/pics
 	def __read_data(self):
