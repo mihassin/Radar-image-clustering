@@ -33,7 +33,7 @@ class my_models:
 		return self.__training_data
 
 
-	def randomly_init_cluster_means(self, k):
+	def __randomly_init_cluster_means(self, k):
 		n = self.__preprocessor.count_data()
 		for i in range(k):
 			indx = rand.randint(n)
@@ -42,8 +42,18 @@ class my_models:
 			self.__means[i] = img
 		return self.__means, self.__meanindx
 
-#KESKEN! tyhjät joukot
-	def clusterify(self):
+	def __fill_empty_clusters(self, clusters):
+		n = self.__preprocessor.count_data()
+		for i in range(len(clusters)):
+			if len(clusters[i]) == 0:
+				indx = rand.randint(n)
+				arr = list(clusters.values())
+				arr.pop(n)
+				clusters[i] = 'asd'
+
+	#empty set handeling
+	#slow as F#¤%
+	def __clusterify(self):
 		data = self.__training_data
 		means = self.get_cluster_means()
 		distances = np.zeros(len(means))
@@ -61,33 +71,25 @@ class my_models:
 			tmp = np.array(clusters[i])
 			tmp = np.append(tmp, j)
 			clusters[i] = tmp
+		#clusters = self.__fill_empty_clusters(clusters)
 		return clusters
 
-#KESKEN tyhjät joukot
-	def divide_data(self, clusters, j):
+	#empty set handeling
+	def __divide_data(self, clusters, j):
 		subset_indx = clusters[j]
-	#	if np.empty(subset_indx):
-	#		return subset_indx
 		data = self.__training_data
-		subset = [data[subset_indx[0]]]
+		subset = np.array([data[subset_indx[0]]])
 		for i in range(1,len(subset_indx)):
-			subset.append(data[subset_indx[i]])
+			subset = np.append(subset, [data[subset_indx[i]]], axis=0)
 		return subset
-
-
-	def newmean(self, subset):
-	#	if np.empty(subset):
-	#		return np.array([])
-		mean = np.sum(subset, axis=0)
-		mean /= len(subset)
-		return mean
 
 
 	def k_means(self, k):
 		clusters = dict()
 		self.__randomly_init_cluster_means(k)
+		print("=========")
+		i = 1
 		while True:
-			i = 1
 			print("round: " + str(i))
 			print("=========")
 			clusters = self.__clusterify()
@@ -97,7 +99,9 @@ class my_models:
 				print("mean: #" + str(j))
 				subset = self.__divide_data(clusters, j)
 				print("data division complete")
-				tmp_means[j] = self.__newmean(subset)
+				tmp_means[j] = subset.mean(axis=0)
+				#most likely new mean doesn't exists within it's cluster and meanindx loses its purpose
+				self.__meanindx[j] = int(1e12)
 				print("new mean found")
 			print("=========")
 			if np.array_equal(self.__means, tmp_means):
@@ -107,8 +111,8 @@ class my_models:
 			i += 1
 		return self.__means
 
-	#requires modifications
-	def __find_subset_minimum(self, dis_X, subset):
+	
+	def __find_subset_minimum(self, subset):
 		mu_key = -1
 		mu_dist = 1.0e12
 		tmp_dist = 0
@@ -124,11 +128,18 @@ class my_models:
 	def k_metoids(self, k):
 		clusters = dict()
 		self.__randomly_init_cluster_means(k)
+		print("=========")
+		i = 1
 		while True:
-			clusters = __clusterify()
-			tmp_means = []
+			print("round: " + str(i))
+			print("=========")
+			clusters = self.__clusterify()
+			print("clusterified")
+			tmp_means = np.zeros(np.shape(self.__means))
 			for j in range(k):
-				subset = self.__subset(clusters, j)
+				print("mean: #" + str(j))
+				subset = self.__divide_data(clusters, j)
+				print("data division complete")
 				tmp_means[k] == self.__find_subset_minimum(subset)
 			if self.__means == tmp_means:
 				break
