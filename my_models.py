@@ -4,7 +4,7 @@ import scipy.spatial.distance as distance
 from preprocessor import *
 
 
-class my_models:
+class my_models(object):
 	
 	def __init__(self):
 		self.__preprocessor = preprocessor()
@@ -42,6 +42,7 @@ class my_models:
 			self.__means[i] = img
 		return self.__means, self.__meanindx
 
+
 	def __fill_empty_clusters(self, clusters):
 		n = self.__preprocessor.count_data()
 		for i in range(len(clusters)):
@@ -64,7 +65,7 @@ class my_models:
 			i = -1
 			for k in range(len(means)):
 				if j == self.__meanindx[k]:
-					distances[k] = -1
+					distances[k] = -1 #if multiple images are same (empty radar)
 				else:
 					distances[k] = distance.euclidean(data[j], means[k])
 			i = np.argmin(distances)

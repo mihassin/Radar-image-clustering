@@ -38,7 +38,7 @@ class preprocessor:
 			self.__path = path
 			self.__data = self.__read_data()
 			self.__amount = len(self.__data)
-		return self.__data
+		return self.__data  
 
 
 	def get_data_as_1d(self):
@@ -54,6 +54,5 @@ class preprocessor:
 		data = []
 		for root, dirs, files in os.walk(self.__path):
 			for file in files:
-				img = mpimg.imread(os.path.join(root,file))
 				data.append(mpimg.imread(os.path.join(root,file)))
 		return data
