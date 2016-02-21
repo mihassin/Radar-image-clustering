@@ -3,15 +3,16 @@ import numpy.random as rand
 import scipy.spatial.distance as distance
 from preprocessor import *
 
+import time
+
 
 class my_models(object):
 	
 	def __init__(self):
 		self.__preprocessor = preprocessor()
-		self.__training_data = []
 		self.__imgsize = 480*720*3
-		self.__means = np.zeros((10, self.__imgsize), dtype="int")
-		self.__meanindx = np.zeros(10, dtype="int")
+		self.__means = []
+		self.__meanindx = []
 		self.__path = ""
 
 
@@ -27,23 +28,26 @@ class my_models(object):
 		print(len(self.__training_data))
 		if len(self.__training_data) == 0 or self.__path != path:
 			data = self.__preprocessor.get_data(path)
-			print("Data harvested")
 			self.__training_data = self.__preprocessor.get_data_as_1d()
-			print("Data in 1d")
+		print("Data harvested")
 		return self.__training_data
 
 
-	def __randomly_init_cluster_means(self, k):
+	def randomly_init_cluster_means(self, k):
 		n = self.__preprocessor.count_data()
+		means = np.zeros((k, self.__imgsize), dtype="int")
+		meanindx = np.zeros(k, dtype="int")
 		for i in range(k):
 			indx = rand.randint(n)
 			img = self.__training_data[indx]
-			self.__meanindx[i] = indx
-			self.__means[i] = img
+			meanindx[i] = indx
+			means[i] = img
+		self.__meanindx = meanindx
+		self.__means = means
 		return self.__means, self.__meanindx
 
 
-	def __fill_empty_clusters(self, clusters):
+	def fill_empty_clusters(self, clusters):
 		n = self.__preprocessor.count_data()
 		for i in range(len(clusters)):
 			if len(clusters[i]) == 0:
@@ -54,7 +58,8 @@ class my_models(object):
 
 	#empty set handeling
 	#slow as F#¤%
-	def __clusterify(self):
+	def clusterify(self):
+		start = time.clock()
 		data = self.__training_data
 		means = self.get_cluster_means()
 		distances = np.zeros(len(means))
@@ -73,10 +78,10 @@ class my_models(object):
 			tmp = np.append(tmp, j)
 			clusters[i] = tmp
 		#clusters = self.__fill_empty_clusters(clusters)
-		return clusters
+		return clusters, (time.clock()-start)
 
-	#empty set handeling
-	def __divide_data(self, clusters, j):
+
+	def divide_data(self, clusters, j):
 		subset_indx = clusters[j]
 		data = self.__training_data
 		subset = np.array([data[subset_indx[0]]])
@@ -112,20 +117,16 @@ class my_models(object):
 			i += 1
 		return self.__means
 
-	
-	def __find_subset_minimum(self, subset):
-		mu_key = -1
-		mu_dist = 1.0e12
-		tmp_dist = 0
-		for i in subset:
-			for j in subset:
-				tmp_dist += dis_X[i][j] 
-			if mu_dist > tmp_dist:
-				mu_key = i
-				mu_dist = tmp_dist
-		return X[mu_key]
 
+	def find_subset_minimum(self, subset):
+		sim = np.zeros((len(subset)))
+		for i in range(len(subset)):
+			for j in range(len(subset)):
+				sim[i] = distance.euclidean(subset[i], subset[j])
+		minimum = np.argmin(sim.sum(axis=0))
+		return subset[minimum]
 
+	#mean index if necessary
 	def k_metoids(self, k):
 		clusters = dict()
 		self.__randomly_init_cluster_means(k)
@@ -141,8 +142,12 @@ class my_models(object):
 				print("mean: #" + str(j))
 				subset = self.__divide_data(clusters, j)
 				print("data division complete")
-				tmp_means[k] == self.__find_subset_minimum(subset)
-			if self.__means == tmp_means:
+				tmp_means[j] == self.__find_subset_minimum(subset)
+				print("new mean found")
+			print("=========")
+			if np.array_equal(self.__means, tmp_means):
+				print("done")
 				break
-			self.__means = tmp_means
+			self.set_cluster_means(tmp_means)
+			i += 1
 		return self.__means
