@@ -3,14 +3,27 @@ import numpy.random as rand
 import scipy.spatial.distance as distance
 from preprocessor import *
 
-import time
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Class my_models                                                  '
+' author: mihassin                                                 '
+' attributes:                                                      '
+'  - __preprocessor, instance of class preprocessor                '
+'  - , amount of images                                      '
+'  - path,   path where images where gathered                      '
+' function:                                                        '
+'  - count_data, returns the amount of images                      '
+'  - get_path, returns path as string                              '
+'  - get_data, returns an array containing images as pixel arrays  '
+'  - __read_data, private function to gather data                  '
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
 class my_models(object):
 	
 	def __init__(self):
 		self.__preprocessor = preprocessor()
-		self.__imgsize = 480*720*3
+		self.__imgsize = 0
 		self.__means = []
 		self.__meanindx = []
 		self.__path = ""
@@ -25,7 +38,9 @@ class my_models(object):
 
 
 	def get_training_data(self, path):
-		data = self.__preprocessor.get_data_as_1d(path)
+		data = self.__preprocessor.get_data_as_2d(path)
+		self.__imgsize = data[1].shape[0]
+		self.__path = path
 		print("Data harvested")
 		return data
 
@@ -36,7 +51,7 @@ class my_models(object):
 		meanindx = np.zeros(k, dtype="int")
 		for i in range(k):
 			indx = rand.randint(n)
-			img = self.__training_data[indx]
+			img = self.__preprocessor.get_data_as_2d(self.__path)[indx]
 			meanindx[i] = indx
 			means[i] = img
 		self.__meanindx = meanindx
@@ -56,8 +71,7 @@ class my_models(object):
 	#empty set handeling
 	#slow as F#¤%
 	def clusterify(self):
-		start = time.clock()
-		data = self.__training_data
+		data = self.__preprocessor.get_data_as_2d(self.__path)
 		means = self.get_cluster_means()
 		distances = np.zeros(len(means))
 		clusters = dict()
@@ -75,7 +89,7 @@ class my_models(object):
 			tmp = np.append(tmp, j)
 			clusters[i] = tmp
 		#clusters = self.__fill_empty_clusters(clusters)
-		return clusters, (time.clock()-start)
+		return clusters
 
 
 	def divide_data(self, clusters, j):
