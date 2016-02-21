@@ -5,14 +5,16 @@ import os
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' Class preprocessor                                               '
+' author: mihassin                                                '
 ' attributes:                                                      '
-'  - data,   array containing image pixel arrays                   '
-'  - amount, amount of images                                      '
-'  - path,   path where images where gathered                      '
+'  - __data,   array containing image pixel arrays                 '
+'  - __amount, amount of images                                    '
+'  - __path,   path where images where gathered                    '
 ' function:                                                        '
 '  - count_data, returns the amount of images                      '
-'  - get_path, returns path as string                              '
+'  - get_path, returns the directory path as string                '
 '  - get_data, returns an array containing images as pixel arrays  '
+'  - get_data_as_1d, returns data as 2d matrix                     '
 '  - __read_data, private function to gather data                  '
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -41,7 +43,7 @@ class preprocessor:
 		return self.__data  
 
 
-	def get_data_as_1d(self, path):
+	def get_data_as_2d(self, path):
 		tmp = self.get_data(path)
 		return [tmp[i].reshape(np.product(tmp[i].shape)) for i in range(len(tmp))]
 
