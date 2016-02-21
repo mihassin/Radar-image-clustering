@@ -25,12 +25,9 @@ class my_models(object):
 
 
 	def get_training_data(self, path):
-		print(len(self.__training_data))
-		if len(self.__training_data) == 0 or self.__path != path:
-			data = self.__preprocessor.get_data(path)
-			self.__training_data = self.__preprocessor.get_data_as_1d()
+		data = self.__preprocessor.get_data_as_1d(path)
 		print("Data harvested")
-		return self.__training_data
+		return data
 
 
 	def randomly_init_cluster_means(self, k):

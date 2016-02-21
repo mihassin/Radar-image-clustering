@@ -41,13 +41,9 @@ class preprocessor:
 		return self.__data  
 
 
-	def get_data_as_1d(self):
-		tmp = self.__data
-		shape = np.shape(tmp[0])
-		new_shape = np.product(shape)
-		for i in range(self.__amount):
-			tmp[i] = np.reshape(tmp[i], new_shape)
-		return tmp
+	def get_data_as_1d(self, path):
+		tmp = self.get_data(path)
+		return [tmp[i].reshape(np.product(tmp[i].shape)) for i in range(len(tmp))]
 
 	#data/pics
 	def __read_data(self):
