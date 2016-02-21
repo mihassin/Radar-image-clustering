@@ -5,11 +5,11 @@ import os
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' Class preprocessor                                               '
-' author: mihassin                                                '
+' author: mihassin                                                 '
 ' attributes:                                                      '
 '  - __data,   array containing image pixel arrays                 '
 '  - __amount, amount of images                                    '
-'  - __path,   path where images where gathered                    '
+'  - __path, directory path to images                              '
 ' function:                                                        '
 '  - count_data, returns the amount of images                      '
 '  - get_path, returns the directory path as string                '

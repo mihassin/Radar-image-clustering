@@ -1,5 +1,4 @@
 import numpy as np
-import numpy.random as rand
 import scipy.spatial.distance as distance
 from preprocessor import *
 
@@ -9,8 +8,10 @@ from preprocessor import *
 ' author: mihassin                                                 '
 ' attributes:                                                      '
 '  - __preprocessor, instance of class preprocessor                '
-'  - , amount of images                                      '
-'  - path,   path where images where gathered                      '
+'  - __imgsize, product of image shape                             '
+'  - __kernels'
+'  -'
+'  - __path, directory path to images                              '
 ' function:                                                        '
 '  - count_data, returns the amount of images                      '
 '  - get_path, returns path as string                              '
@@ -24,17 +25,17 @@ class my_models(object):
 	def __init__(self):
 		self.__preprocessor = preprocessor()
 		self.__imgsize = 0
-		self.__means = []
-		self.__meanindx = []
+		self.__kernels = []
+		self.__kernel_indx = []
 		self.__path = ""
 
 
-	def get_cluster_means(self):
-		return self.__means
+	def get_cluster_kernels(self):
+		return self.__kernels
 
 
-	def set_cluster_means(self, means):
-		self.__means = means
+	def set_cluster_kernels(self, kernels):
+		self.__kernels = kernels
 
 
 	def get_training_data(self, path):
@@ -45,18 +46,18 @@ class my_models(object):
 		return data
 
 
-	def randomly_init_cluster_means(self, k):
-		n = self.__preprocessor.count_data()
-		means = np.zeros((k, self.__imgsize), dtype="int")
-		meanindx = np.zeros(k, dtype="int")
+	def __randomly_init_cluster_kernels(self, data, k):
+		n = len(data)
+		kernels = np.zeros((k, self.__imgsize), dtype="int")
+		kernel_indx = np.zeros(k, dtype="int")
 		for i in range(k):
-			indx = rand.randint(n)
-			img = self.__preprocessor.get_data_as_2d(self.__path)[indx]
-			meanindx[i] = indx
-			means[i] = img
-		self.__meanindx = meanindx
-		self.__means = means
-		return self.__means, self.__meanindx
+			indx = np.random.randint(n)
+			img = data[indx]
+			kernel_indx[i] = indx
+			kernels[i] = img
+		self.__kernel_indx = kernel_indx
+		self.__kernels = kernels
+		return self.__kernels, self.__kernel_indx
 
 
 	def fill_empty_clusters(self, clusters):
@@ -70,20 +71,19 @@ class my_models(object):
 
 	#empty set handeling
 	#slow as F#¤%
-	def clusterify(self):
-		data = self.__preprocessor.get_data_as_2d(self.__path)
-		means = self.get_cluster_means()
-		distances = np.zeros(len(means))
+	def __clusterify(self, data):
+		kernels = self.get_cluster_kernels()
+		distances = np.zeros(len(kernels))
 		clusters = dict()
-		for i in range(len(means)):
+		for i in range(len(kernels)):
 			clusters[i] = np.array([], dtype="int")
-		for j in range(self.__preprocessor.count_data()):
+		for j in range(len(data)):
 			i = -1
-			for k in range(len(means)):
-				if j == self.__meanindx[k]:
+			for k in range(len(kernels)):
+				if j == self.__kernel_indx[k]:
 					distances[k] = -1 #if multiple images are same (empty radar)
 				else:
-					distances[k] = distance.euclidean(data[j], means[k])
+					distances[k] = distance.euclidean(data[j], kernels[k])
 			i = np.argmin(distances)
 			tmp = np.array(clusters[i])
 			tmp = np.append(tmp, j)
@@ -91,45 +91,47 @@ class my_models(object):
 		#clusters = self.__fill_empty_clusters(clusters)
 		return clusters
 
-
-	def divide_data(self, clusters, j):
+	#argpartition?
+	def __divide_data(self, data, clusters, j):
+		if(j > len(clusters)):
+			return "oh my gucciness, i got one"
 		subset_indx = clusters[j]
-		data = self.__training_data
-		subset = np.array([data[subset_indx[0]]])
-		for i in range(1,len(subset_indx)):
-			subset = np.append(subset, [data[subset_indx[i]]], axis=0)
+		subset = np.zeros((len(subset_indx), data[0].shape[0]))#[data[subset_indx[0]]])
+		for i in range(len(subset_indx)):
+			subset[i] = data[subset_indx[i]]
+			#subset = np.append(subset, [data[subset_indx[i]]], axis=0)
 		return subset
 
 
-	def k_means(self, k):
+	def k_means(self, data, k):
 		clusters = dict()
-		self.__randomly_init_cluster_means(k)
+		self.__randomly_init_cluster_kernels(data, k)
 		print("=========")
 		i = 1
 		while True:
 			print("round: " + str(i))
 			print("=========")
-			clusters = self.__clusterify()
+			clusters = self.__clusterify(data)
 			print("clusterified")
-			tmp_means = np.zeros(np.shape(self.__means))
+			tmp_means = np.zeros(np.shape(self.__kernels))
 			for j in range(k):
 				print("mean: #" + str(j))
-				subset = self.__divide_data(clusters, j)
+				subset = self.__divide_data(data, clusters, j)
 				print("data division complete")
 				tmp_means[j] = subset.mean(axis=0)
 				#most likely new mean doesn't exists within it's cluster and meanindx loses its purpose
-				self.__meanindx[j] = int(1e12)
+				self.__kernel_indx[j] = int(1e12)
 				print("new mean found")
 			print("=========")
-			if np.array_equal(self.__means, tmp_means):
+			if np.array_equal(self.__kernels, tmp_means):
 				print("done")
 				break
-			self.set_cluster_means(tmp_means)
+			self.set_cluster_kernels(tmp_means)
 			i += 1
-		return self.__means
+		return self.__kernels
 
 
-	def find_subset_minimum(self, subset):
+	def __find_subset_minimum(self, subset):
 		sim = np.zeros((len(subset)))
 		for i in range(len(subset)):
 			for j in range(len(subset)):
@@ -138,27 +140,27 @@ class my_models(object):
 		return subset[minimum]
 
 	#mean index if necessary
-	def k_metoids(self, k):
+	def k_metoids(self, data, k):
 		clusters = dict()
-		self.__randomly_init_cluster_means(k)
+		self.__randomly_init_cluster_kernels(data, k)
 		print("=========")
 		i = 1
 		while True:
 			print("round: " + str(i))
 			print("=========")
-			clusters = self.__clusterify()
+			clusters = self.__clusterify(data)
 			print("clusterified")
-			tmp_means = np.zeros(np.shape(self.__means))
+			tmp_kernels = np.zeros(np.shape(self.__kernels))
 			for j in range(k):
 				print("mean: #" + str(j))
-				subset = self.__divide_data(clusters, j)
+				subset = self.__divide_data(data, clusters, j)
 				print("data division complete")
-				tmp_means[j] == self.__find_subset_minimum(subset)
+				tmp_kernels[j] == self.__find_subset_minimum(subset)
 				print("new mean found")
 			print("=========")
-			if np.array_equal(self.__means, tmp_means):
+			if np.array_equal(self.__kernels, tmp_kernels):
 				print("done")
 				break
-			self.set_cluster_means(tmp_means)
+			self.set_cluster_kernels(tmp_kernels)
 			i += 1
-		return self.__means
+		return self.__kernels
