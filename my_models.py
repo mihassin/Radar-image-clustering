@@ -96,13 +96,12 @@ class my_models(object):
 		if(j > len(clusters)):
 			return "oh my gucciness, i got one"
 		subset_indx = clusters[j]
-		subset = np.zeros((len(subset_indx), data[0].shape[0]))#[data[subset_indx[0]]])
-		for i in range(len(subset_indx)):
-			subset[i] = data[subset_indx[i]]
-			#subset = np.append(subset, [data[subset_indx[i]]], axis=0)
+		subset = np.array([data[subset_indx[0]]])
+		for i in range(1,len(subset_indx)):
+			subset = np.append(subset, [data[subset_indx[i]]], axis=0)
 		return subset
 
-
+	#k=4, mb splitting data 
 	def k_means(self, data, k):
 		clusters = dict()
 		self.__randomly_init_cluster_kernels(data, k)
