@@ -102,12 +102,11 @@ class my_models(object):
 		return subset
 
 	#k=4, mb splitting data 
-	def k_means(self, data, k):
+	def k_means(self, data, k, iterations):
 		clusters = dict()
 		self.__randomly_init_cluster_kernels(data, k)
 		print("=========")
-		i = 1
-		while True:
+		for i in range(iterations):
 			print("round: " + str(i))
 			print("=========")
 			clusters = self.__clusterify(data)
@@ -122,12 +121,14 @@ class my_models(object):
 				self.__kernel_indx[j] = int(1e12)
 				print("new mean found")
 			print("=========")
-			if np.array_equal(self.__kernels, tmp_means):
-				print("done")
-				break
 			self.set_cluster_kernels(tmp_means)
-			i += 1
-		return self.__kernels
+		return self.__kernels, clusters
+
+
+	#def k_medians(self, data, k, iterations):
+	#	means = np.random.choice(len(data), k, replace=False)
+
+	#	for i in range(iterations):
 
 
 	def __find_subset_minimum(self, subset):
@@ -139,7 +140,7 @@ class my_models(object):
 		return subset[minimum]
 
 	#mean index if necessary
-	def k_metoids(self, data, k):
+	def k_medoids(self, data, k):
 		clusters = dict()
 		self.__randomly_init_cluster_kernels(data, k)
 		print("=========")
