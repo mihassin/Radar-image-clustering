@@ -102,18 +102,17 @@ class my_models(object):
 		return subset
 
 	#k=4, mb splitting data 
-	def k_means(self, data, k, iterations):
+	def __k_means(self, data, k, iterations):
 		clusters = dict()
-		self.__randomly_init_cluster_kernels(data, k)
 		print("=========")
 		for i in range(iterations):
-			print("round: " + str(i))
+			print("round: " + str(i+1))
 			print("=========")
 			clusters = self.__clusterify(data)
 			print("clusterified")
 			tmp_means = np.zeros(np.shape(self.__kernels))
 			for j in range(k):
-				print("mean: #" + str(j))
+				print("mean: #" + str(j+1))
 				subset = self.__divide_data(data, clusters, j)
 				print("data division complete")
 				tmp_means[j] = subset.mean(axis=0)
@@ -125,27 +124,49 @@ class my_models(object):
 		return self.__kernels, clusters
 
 
-	#def k_medians(self, data, k, iterations):
-	#	means = np.random.choice(len(data), k, replace=False)
+	def k_means(self, data, k, iterations):
+		self.__randomly_init_cluster_kernels(data, k)
+		return self.__k_means(data, k, iterations)
 
-	#	for i in range(iterations):
+
+	def __kpp_kernel_init(self, data, K):
+		N = len(data)
+		# 1. Choose one center uniformly at random from among the data points
+		indx = np.random.randint(N)
+		indecies = np.array(indx)
+		# 4. repeat steps 2. and 3. untile k kernels have been chosen		
+		for k in range(K):
+		# 2. For each data point x, compute D(x), the distance between x and the nearest center that has already been chosen 
+			distances = np.zeros(N)
+			for n in range(N):
+				for i in range(len(indecies)):
+					distances[n]
+		# 3. Choose one new data point at random as new center, 
+		#    using a weigthed probability distribution where a point x is chosen with a probability proportional to D(x)^2
+
+		return self.__kernels, self.__kernel_indx
+
+		
+	def k_means_pp(self, data, k, iterations):
+		self.__kpp_kernel_init()
+		return self.__kernels, clusters
 
 
+	#another slow donkey
 	def __find_subset_minimum(self, subset):
 		sim = np.zeros((len(subset)))
 		for i in range(len(subset)):
 			for j in range(len(subset)):
-				sim[i] = distance.euclidean(subset[i], subset[j])
+				sim[i] += distance.euclidean(subset[i], subset[j])
 		minimum = np.argmin(sim.sum(axis=0))
 		return subset[minimum]
 
 	#mean index if necessary
-	def k_medoids(self, data, k):
+	def k_medoids(self, data, k, iterations):
 		clusters = dict()
 		self.__randomly_init_cluster_kernels(data, k)
 		print("=========")
-		i = 1
-		while True:
+		for i in range(iterations):
 			print("round: " + str(i))
 			print("=========")
 			clusters = self.__clusterify(data)
@@ -158,9 +179,5 @@ class my_models(object):
 				tmp_kernels[j] == self.__find_subset_minimum(subset)
 				print("new mean found")
 			print("=========")
-			if np.array_equal(self.__kernels, tmp_kernels):
-				print("done")
-				break
 			self.set_cluster_kernels(tmp_kernels)
-			i += 1
-		return self.__kernels
+		return self.__kernels, clusters

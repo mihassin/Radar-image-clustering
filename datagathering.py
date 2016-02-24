@@ -32,12 +32,12 @@ def create_path(path_):
 		os.makedirs(path_)
 
 
-def getmap_info(obj, cnc):
+def getmap_info(obj, size, cnc):
 	res = [[cnc[obj].title]]
 	style = list(cnc["Radar:kuopio_dbzh"].styles)
 	style.remove('raster')
 	res.append(style[0:1])
-	arr = ["EPSG:4326", cnc[obj].boundingBoxWGS84, (720,480), "image/jpeg", True]
+	arr = ["EPSG:4326", cnc[obj].boundingBoxWGS84, size, "image/jpeg", True]
 	res.extend(arr)
 	return res
 
@@ -54,27 +54,27 @@ def getmap(arr, cnc):
 		)
 
 
-def to_jpg(fname, location, obj, cnc):
-	arr = getmap_info(obj, cnc)
+def to_jpg(fname, location, obj, size, cnc):
+	arr = getmap_info(obj, size, cnc)
 	img = getmap(arr, cnc)
 	out = open(location+"/"+fname, 'wb')
 	out.write(img.read())
 	out.close()
 
 
-def lots_tojpg(which, cnc):
+def lots_tojpg(which, size, cnc):
 	for i in find(which, cnc):
-		location  = "data/pics/"+which+"/"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
+		location  = "data/pics/"+str(size[0])+"x"+str(size[1])+"/"+which+"/"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
 		create_path(location)
 		filename = cnc[i].title+"_"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d-%H-%M-%S')+".jpg"
-		to_jpg(filename, location, i, cnc)
+		to_jpg(filename, location, i, size, cnc)
 
 
-def pull_all_radar_images(cnc):
-	lots_tojpg("dbzh", cnc)
-	lots_tojpg("etop_20",cnc)
-	lots_tojpg("vrad",cnc)
-	lots_tojpg("hclass", cnc)
+def pull_all_radar_images(cnc, size):
+	lots_tojpg("dbzh", size, cnc)
+	lots_tojpg("etop_20", size, cnc)
+	lots_tojpg("vrad", size, cnc)
+	lots_tojpg("hclass", size, cnc)
 
 '''
 
