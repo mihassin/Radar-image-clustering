@@ -3,21 +3,30 @@ import scipy.spatial.distance as distance
 from preprocessor import *
 
 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Class my_models                                                  '
-' author: mihassin                                                 '
-' attributes:                                                      '
-'  - __preprocessor, instance of class preprocessor                '
-'  - __imgsize, product of image shape                             '
-'  - __kernels'
-'  -'
-'  - __path, directory path to images                              '
-' function:                                                        '
-'  - count_data, returns the amount of images                      '
-'  - get_path, returns path as string                              '
-'  - get_data, returns an array containing images as pixel arrays  '
-'  - __read_data, private function to gather data                  '
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Class my_models                                                                     '
+' author: mihassin                                                                    '
+' attributes:                                                                         '
+'  - __preprocessor, instance of class preprocessor                                   '
+'  - __imgsize, product of image shape                                                '
+'  - __kernels, kernel images stored here as an array                                 '
+'  - __kernel_indx, indecies of kernels in data                                       ' 
+'  - __path, directory path to images                                                 '
+' function:                                                                           '
+'  - get_cluster_kernels, returns __kernels                                           '
+'  - set_cluster_kernels, sets new kernels to __kernels                               ' 
+'  - get_training_data, uses preprocessor to get data from given path                 '
+'  - __randomly_init_cluster_kernels, selects randomly kernels                        '
+'  - __clusterify, returns a dictionary filled with index arrays                      '
+'  - __divide_data, old function creating subarrays replaced with __faster_div        '
+'  - __faster_div, faster way to create subarrays with indecies of the original array '
+'  - __k_means, basic implementation of k-means                                       '
+'  - k_means, uses __k_means and initial kernels with __randomly_init_cluster_kernels '
+'  - __kpp_kernel_init, helper function that finds initial kernels                    '
+'  - k_means_pp, k++ implementation                                                   '
+'  - __find_subset_minimum, k-medoids way to find new cluster kernel in update phase  '
+'  - k_medoids, basic k_medoids implementation, without distance matrix (memory rip)  '
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
 class my_models(object):
@@ -33,7 +42,7 @@ class my_models(object):
 	def get_cluster_kernels(self):
 		return self.__kernels
 
-
+	#does not modify __kernel_indx
 	def set_cluster_kernels(self, kernels):
 		self.__kernels = kernels
 
