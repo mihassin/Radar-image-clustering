@@ -159,12 +159,8 @@ class my_models(object):
 		for i in range(len(subset)):
 			for j in range(len(subset)):
 				sim[i] += distance.euclidean(subset[i], subset[j])
-		minimum = sim.argmin()#np.argmin(sim.sum(axis=0))
-		print(minimum)
-		print(len(subset))
-		a = subset[minimum]
-		b = subset_indx[minimum]
-		return a, b
+		minimum = sim.argmin()
+		return subset[minimum], subset_indx[minimum]
 
 
 	#slower than k-means (IML)
@@ -184,7 +180,7 @@ class my_models(object):
 				subset = self.__faster_div(data, clusters, j)
 				subset_indx = clusters[j]
 				print("data division complete")
-				tmp_kernels[j], tmp_indx[j] == self.__find_subset_minimum(subset, subset_indx)
+				tmp_kernels[j], tmp_indx[j] = self.__find_subset_minimum(subset, subset_indx)
 				print("new mean found")
 			print("=========")
 			if np.array_equal(tmp_kernels, self.__kernels):
