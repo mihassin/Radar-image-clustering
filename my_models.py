@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.spatial.distance as distance
-from preprocessor import *
+from preprocessor import preprocessor
 
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -31,6 +31,7 @@ from preprocessor import *
 
 class my_models(object):
 	
+
 	def __init__(self):
 		self.__preprocessor = preprocessor()
 		self.__imgsize = 0
@@ -42,11 +43,13 @@ class my_models(object):
 	def get_cluster_kernels(self):
 		return self.__kernels
 
+
 	#does not modify __kernel_indx
 	def set_cluster_kernels(self, kernels):
 		self.__kernels = kernels
 
 
+    #uses preprocessor to get data as 2d array
 	def get_training_data(self, path):
 		data = self.__preprocessor.get_data_as_2d(path)
 		self.__imgsize = data[1].shape[0]
@@ -55,6 +58,7 @@ class my_models(object):
 		return data
 
 
+	#cloud be improved 
 	def __randomly_init_cluster_kernels(self, data, k):
 		n = len(data)
 		kernels = np.zeros((k, self.__imgsize), dtype="int")
@@ -69,8 +73,8 @@ class my_models(object):
 		return self.__kernels, self.__kernel_indx
 
 
-	#empty set handeling
 	#slow as F#¤%
+	#numpys built-in functions could improve the run-time
 	def __clusterify(self, data):
 		kernels = self.get_cluster_kernels()
 		distances = np.zeros(len(kernels))
@@ -80,6 +84,7 @@ class my_models(object):
 		for j in range(len(data)):
 			i = -1
 			for k in range(len(kernels)):
+				#it seems that P(empty radar image) is pretty high  
 				if j == self.__kernel_indx[k]: #might not be necessary
 					distances[k] = -1 #kernel belongs to it's own cluster
 				else:
@@ -131,7 +136,7 @@ class my_models(object):
 		return self.__kernels, clusters
 
 
-
+	#Initial cluster kernels are selected randomly
 	def k_means(self, data, k, iterations):
 		self.__randomly_init_cluster_kernels(data, k)
 		return self.__k_means(data, k, iterations)
