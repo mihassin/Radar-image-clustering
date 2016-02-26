@@ -186,6 +186,5 @@ class my_models(object):
 			if np.array_equal(tmp_kernels, self.__kernels):
 				break
 			self.set_cluster_kernels(tmp_kernels)
-			print(tmp_indx)
 			self.__kernel_indx = tmp_indx
 		return self.__kernels, clusters

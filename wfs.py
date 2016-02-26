@@ -1,3 +1,0 @@
-'''
-def WebFeatureService(url, request):
-'''
