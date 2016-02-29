@@ -27,7 +27,7 @@ static/
 *api
 data/
 pics/
-docs/
+docs/secret
 raster/
 *.odt
 *.pdf
