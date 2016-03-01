@@ -141,30 +141,42 @@ class my_models(object):
 		self.__randomly_init_cluster_kernels(data, k)
 		return self.__k_means(data, k, iterations)
 
+	def __next_k(self, data, C):
+		d = np.zeros(len(data))
+		for i in range(len(data)):
+			tmp = np.zeros(len(C))
+			for j in range(len(C)):
+				tmp[j] = distance.euclidean(data[i], data[j])
+			d[i] = np.min(tmp)
+		d **= 2
+		d /= np.sum(d)
+		return np.random.choice(len(data), p=d)
 
-
+	''' Wikipedia.org
+	1. Choose one center uniformly at random from among the data points
+	2. For each data point x, compute D(x), the distance between x and the nearest center that has already been chosen 
+	3. Choose one new data point at random as new center, 
+	   using a weigthed probability distribution where a point x is chosen with a probability proportional to D(x)^2
+	4. repeat steps 2. and 3. untile k kernels have been chosen		
+	'''
 	def __kpp_kernel_init(self, data, K):
 		N = len(data)
-		# 1. Choose one center uniformly at random from among the data points
-		indx = np.random.randint(N)
-		indecies = np.array(indx)
-		# 4. repeat steps 2. and 3. untile k kernels have been chosen		
-		for k in range(K):
-		# 2. For each data point x, compute D(x), the distance between x and the nearest center that has already been chosen 
-			distances = np.zeros(N)
-			for n in range(N):
-				for i in range(len(indecies)):
-					distances[n]
-		# 3. Choose one new data point at random as new center, 
-		#    using a weigthed probability distribution where a point x is chosen with a probability proportional to D(x)^2
-
+		indx = np.random.randint(N)#1
+		C = np.array([data[indx]], dtype="int")
+		indecies = np.array([indx], dtype="int")
+		while len(C) < K:#4
+			sample = self.__next_k(data, C)#2 #3
+			indecies = np.append(indecies, sample)
+			C = np.append(C, [data[sample]], axis=0)
+		self.__kernels = C
+		self.__kernel_indx = indecies
 		return self.__kernels, self.__kernel_indx
 
 		
 	#improved initial kernels	
 	def k_means_pp(self, data, k, iterations):
-		self.__kpp_kernel_init()
-		return self.__kernels, clusters
+		self.__kpp_kernel_init(data, k)
+		return self.__k_means(data, k, iterations)
 
 
 	#another slow donkey
