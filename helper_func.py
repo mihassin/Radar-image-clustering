@@ -16,6 +16,13 @@ def binomial(n, k):
 def avg_dist(data):
 	tot = 0
 	for i in range(len(data)):
-		for j in range(len(data)):
-			dist.euclidean(data[i], data[j])
+		for j in range(i+1,len(data)):
+			tot += dist.euclidean(data[i], data[j])
 	return tot / binomial(len(data), 2) #pairs
+
+def avg_clust_sim(n, clusters):
+	tot = np.zeros(n)
+	for i in range(n):
+		tot[i] = avg_dist(clusters[i])
+		print("round " + str(i))
+	return np.mean(tot)
