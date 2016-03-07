@@ -1,6 +1,6 @@
 #DJANGO-TEMPLATE
 
-myenv
+myenv/
 
 *.pyc
 django.log
