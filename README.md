@@ -1,9 +1,14 @@
 # ubiquitous-spoon
 Machine learning project:
+
+* Project repository for course: https://www.cs.helsinki.fi/courses/582739/2016/k/k/1
+
 * Goal of this project is to find clusters based on radar images provided by fmi: https://en.ilmatieteenlaitos.fi/open-data
 
 * Schedule: https://docs.google.com/spreadsheets/d/1SMEjF9h94tKEg0vpC7j1yXE0jVpetmsGcNhnBnqYh8M/edit#gid=0
 * Hour accounting: https://docs.google.com/spreadsheets/d/1SMEjF9h94tKEg0vpC7j1yXE0jVpetmsGcNhnBnqYh8M/edit#gid=2095313416
+
+* Simulation of the algorithms running hosted at: https://stormy-depths-76357.herokuapp.com/
 
 Single radar images:
 * radar reflectivity (dbz)
