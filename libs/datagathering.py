@@ -76,12 +76,5 @@ def pull_all_radar_images(cnc, size):
 	lots_tojpg("vrad", size, cnc)
 	lots_tojpg("hclass", size, cnc)
 
-'''
-
-    radar reflectivity (dbz)
-    radial velocity (vrad)
-    rain classification (hclass)
-    cloud top height (etop_20)
-    
-'''
-
+def host_pull():
+	return ""

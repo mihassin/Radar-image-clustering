@@ -5,3 +5,5 @@ libs/data/
 docs/secret
 
 libs/api
+
+libs/__pycache__/
