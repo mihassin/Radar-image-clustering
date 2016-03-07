@@ -26,7 +26,7 @@ SECRET_KEY = 'f*e#wnben5)v_a-)oz26%%d_0na&k733adu64gt#z6620cdigi'
 DEBUG = True
 
 #ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['.herokuapp.com'] 
+ALLOWED_HOSTS = ['aqueous-beyond-59944.herokuapp.com'] 
 
 
 # Application definition
@@ -83,9 +83,9 @@ DATABASES = {
 }
 
 # ADDED
-import dj_database_url
+#import dj_database_url
 
-DATABASES['default'] = dj_database_url.config()
+#DATABASES['default'] = dj_database_url.config()
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
