@@ -2,6 +2,9 @@
 
 venv/
 
+staticfiles
+.env
+
 *.pyc
 django.log
 django.log*
