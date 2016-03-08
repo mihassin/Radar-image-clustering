@@ -8,7 +8,7 @@ Machine learning project:
 * Schedule: https://docs.google.com/spreadsheets/d/1SMEjF9h94tKEg0vpC7j1yXE0jVpetmsGcNhnBnqYh8M/edit#gid=0
 * Hour accounting: https://docs.google.com/spreadsheets/d/1SMEjF9h94tKEg0vpC7j1yXE0jVpetmsGcNhnBnqYh8M/edit#gid=2095313416
 
-* Simulation of the algorithms running hosted at: https://stormy-depths-76357.herokuapp.com/
+* Hosted at: http://mihassin.pythonanywhere.com/
 
 Single radar images:
 * radar reflectivity (dbz)

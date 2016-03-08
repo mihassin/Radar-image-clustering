@@ -3,6 +3,8 @@ from owslib.csw import CatalogueServiceWeb
 import numpy as np
 import datetime, time, os
 
+
+#estaplishes a connection to wms.fmi.fi with an api key
 def wms_connection(api):
 	domain = "http://wms.fmi.fi/"
 	url = domain + "fmi-apikey/" + api + "/geoserver/wms"
@@ -12,6 +14,7 @@ def wms_connection(api):
 	return cnc
 
 
+#establishes csw connenction to fmi.fi
 def csw_connection():
 	cnc = CatalogueServiceWeb('http://catalog.fmi.fi/geonetwork/srv/en/csw') # open for public, not api required 
 	if cnc.identification.type != "OGC:WMS":
@@ -19,19 +22,13 @@ def csw_connection():
 	return cnc
 
 
-def find(item, connection):
-	res = np.array([])
-	for a in list(connection.contents):
-		if a.lower().count(item.lower()) > 0:
-			res = np.append(res, a)
-	return res
-
-
+#creates a directory to system fs
 def create_path(path_):
 	if not os.path.exists(path_):
 		os.makedirs(path_)
 
 
+#rounds up info for image query
 def getmap_info(obj, size, cnc):
 	res = [[cnc[obj].title]]
 	style = list(cnc["Radar:kuopio_dbzh"].styles)
@@ -42,6 +39,7 @@ def getmap_info(obj, size, cnc):
 	return res
 
 
+#returns essential values for a image request
 def getmap(arr, cnc):
 	return cnc.getmap(
 		layers=arr[0],
@@ -54,6 +52,7 @@ def getmap(arr, cnc):
 		)
 
 
+#saves and image on a disk
 def to_jpg(fname, location, obj, size, cnc):
 	arr = getmap_info(obj, size, cnc)
 	img = getmap(arr, cnc)
@@ -62,6 +61,16 @@ def to_jpg(fname, location, obj, size, cnc):
 	out.close()
 
 
+#returns all measure type radar stations
+def find(item, connection):
+	res = np.array([])
+	for a in list(connection.contents):
+		if a.lower().count(item.lower()) > 0:
+			res = np.append(res, a)
+	return res
+
+
+#saves all images with a specific type and size size
 def lots_tojpg(which, size, cnc):
 	for i in find(which, cnc):
 		location  = "data/pics/"+str(size[0])+"x"+str(size[1])+"/"+which+"/"+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
@@ -70,11 +79,7 @@ def lots_tojpg(which, size, cnc):
 		to_jpg(filename, location, i, size, cnc)
 
 
-def pull_all_radar_images(cnc, size):
-	lots_tojpg("dbzh", size, cnc)
-	lots_tojpg("etop_20", size, cnc)
-	lots_tojpg("vrad", size, cnc)
-	lots_tojpg("hclass", size, cnc)
-
-def host_pull():
-	return ""
+#pulls all images from all radars with every type with a specific size
+def save_all_radar_images(cnc, size):
+	types = np.array(["dbzh", "etop_20", "vrad", "hclass"])
+	for i in types: lots_tojpg(types[i], size)
