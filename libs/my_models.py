@@ -49,6 +49,24 @@ class my_models(object):
 		self.__kernels = kernels
 
 
+	def get_cluster_kernel_indx(self):
+		return self.__kernel_indx
+
+
+	def get_closest_to_mean(self, data, means, cls):
+		closest = np.zeros(np.shape(means))
+		cl_indx = np.zeros((len(means)), dtype=np.int)
+		for m in range(len(means)):
+			tmp_dist = 1e10
+			for indx in cls[m]:
+				new_dist = distance.euclidean(m, data[indx])
+				if new_dist < tmp_dist:
+					new_dist = tmp_dist
+					closest[m] = data[indx]
+					cl_indx[m] = indx
+		return closest, cl_indx
+
+
     #uses preprocessor to get data as 2d array
 	def get_training_data(self, path):
 		data = self.__preprocessor.get_data_as_2d(path)
