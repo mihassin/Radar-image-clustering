@@ -55,7 +55,7 @@ class my_models(object):
 
 	def get_closest_to_mean(self, data, means, cls):
 		closest = np.zeros(np.shape(means))
-		cl_indx = np.zeros((len(means)), dtype=np.int)
+		cl_indx = np.zeros(len(means))
 		for m in range(len(means)):
 			tmp_dist = 1e10
 			for indx in cls[m]:
@@ -64,7 +64,7 @@ class my_models(object):
 					new_dist = tmp_dist
 					closest[m] = data[indx]
 					cl_indx[m] = indx
-		return closest, cl_indx
+		return closest, cl_indx.astype(np.int)
 
 
     #uses preprocessor to get data as 2d array
@@ -218,7 +218,7 @@ class my_models(object):
 			clusters = self.__clusterify(data)
 			print("clusterified")
 			tmp_kernels = np.zeros(np.shape(self.__kernels))
-			tmp_indx = np.zeros(k)
+			tmp_indx = np.zeros((k), dtype=np.int)
 			for j in range(k):
 				print("mean: #" + str(j+1))
 				subset = self.__faster_div(data, clusters, j)
