@@ -82,4 +82,4 @@ def lots_tojpg(which, size, cnc):
 #pulls all images from all radars with every type with a specific size
 def save_all_radar_images(cnc, size):
 	types = np.array(["dbzh", "etop_20", "vrad", "hclass"])
-	for i in types: lots_tojpg(types[i], size)
+	for i in types: lots_tojpg(i, size, cnc)
