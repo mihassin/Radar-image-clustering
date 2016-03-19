@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <title>Weather radar imamge clustering</title>
+    </head>
+    <body>
+        {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
+        <h1>Weather radar image clustering</h1>
+        <p>Press a button to visualize cluster centers with a desired clustering algorithm.</p>
+        <p>Select k value between 1-10. Beware higher k value cause empty cluster!</p>
+        <form action='/weatherapp/kmeans/' method='POST'>
+            {% csrf_token %}
+            k: <input type="text" name="k" />
+            <input type="submit" value="k-means" />
+        </form>
+        <form action='/weatherapp/kmeanspp/' method='POST'>
+            {% csrf_token %}
+            k: <input type="text" name="k" />
+            <input type="submit" value="k-means++" />
+        </form>
+        <form action='/weatherapp/kmedoids/' method='POST'>
+            {% csrf_token %}
+            k: <input type="text" name="k" />
+            <input type="submit" value="k-medoids" />
+        </form>
+        <!-- LISTAA CLUSTERI KUVAT TÄHÄN -->
+        {% if run %}
+            <p>Cluster center images</p>
+        {% endif %}
+        {% for i in mean_indx %}
+            <img src="{{ STATIC_URL }}img{{i}}.jpg" />
+        {% endfor %}
+    </body>
+</html>
