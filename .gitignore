@@ -7,3 +7,18 @@ docs/secret
 libs/api
 
 libs/__pycache__/
+
+# django stuff
+.cache/
+.config/
+.local/
+.virtualenv/
+
+weather_report/static/
+weather_report/media/
+
+weather_report/weather_report/__pycache__/
+weather_report/weatherapp/__pycache__/
+*/pycache/
+
+*.pyc
