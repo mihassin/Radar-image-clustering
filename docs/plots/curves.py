@@ -27,6 +27,32 @@ def small_im_429_k_sim():
 	ax.set_xlabel("K")
 	plt.show()
 
+def small_im_624_k_ite():
+	plt.title("Iterations vs. K")
+	plt.plot(range(1,7), [2,5.5,7.2,10.9,11, 15.6], "b", label='k-means')
+	plt.plot(range(1,7), [2,5.2,6.43,8.8,10.1, 14.8], "g", label='k-means++')
+	plt.plot(range(1,7), [2,4.8,6.1,8.56,9.97, 15.2], "r", label='k-medoids')
+	plt.legend(loc="upper left")
+	plt.ylim(1,16)
+	plt.xlim(1,6)
+	ax = plt.gca()
+	ax.set_ylabel("iterations")
+	ax.set_xlabel("K")
+	plt.show()
+
+def small_im_624_k_sim():
+	plt.title("Similarity vs. K")
+	plt.plot(range(1,7), [1.06761939, 0.28185189, 0.01967289, 0.0652243, 0.03231223 ,0.], "b", label='k-means')
+	plt.plot(range(1,7), [1.08073208, 0.27588115, 0., 0.02874407, 0.01373283, 0.00187234], "g", label='k-means++')
+	plt.plot(range(1,7), [1.08360387, 0.30576975, 0.10334343, 0., 0.01933251, 0.00145624], "r", label='k-medoids')
+	plt.legend(loc="upper left")
+	plt.ylim(0,1.1)
+	plt.xlim(1,6)
+	ax = plt.gca()
+	ax.set_ylabel("dissimilarity")
+	ax.set_xlabel("K")
+	plt.show()
+
 #km 1498.839, 2136.87056 ,2502.217, 2561.001, 2176.025, 2331.23, 2050.636
 #kpp 1498.839, 2304.052, 2475.13, 1276.073, 1018.3216, 2111.64, 1498.777
 #kmed 1498.839, 699.99, 1461.4628, 1741.452, 2122.13165, 1938.1465, 2157.956
