@@ -22,7 +22,7 @@ django-toolbelt==0.0.1
 duplicity==0.6.23
 GnuPGInterface==0.3.2
 gunicorn==19.4.5
-html5lib==0.999
+html5lib==0.999999999
 httplib2==0.8
 ipython==1.2.1
 Jinja2==2.7.2
